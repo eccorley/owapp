@@ -1,0 +1,24 @@
+#!node_modules/.bin/babel-node
+
+const Promise = require("bluebird");
+const { writeFile } = require("fs");
+const { schemaFile, generateSchema } = require("../src/graphql/schema");
+
+const writeFileAsync = Promise.promisify(writeFile);
+const trainingAccounts = [
+  { name: "HaventMetYou-2451", region: "us", platform: "pc" },
+  { name: "SPREE-2984", region: "us", platform: "pc" },
+  { name: "Daco-11404", region: "us", platform: "pc" },
+  { name: "halfdead-11796", region: "us", platform: "pc" },
+  { name: "uNK0E-2889", region: "us", platform: "pc" },
+  { name: "Zuppeh-2840", region: "eu", platform: "pc" }
+];
+
+console.log("Generating schema file. This might take a few seconds...");
+generateSchema(trainingAccounts).then(async schema => {
+  await writeFileAsync(schemaFile, schema);
+  console.log(
+    "Generated schema file from %d training accounts",
+    trainingAccounts.length
+  );
+});
