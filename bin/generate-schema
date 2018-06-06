@@ -16,6 +16,7 @@ const trainingAccounts = [
 
 console.log("Generating schema file. This might take a few seconds...");
 generateSchema(trainingAccounts).then(async schema => {
+  console.log(schemaFile);
   await writeFileAsync(schemaFile, schema);
   console.log(
     "Generated schema file from %d training accounts",

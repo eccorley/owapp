@@ -45,21 +45,11 @@ async function findPlayer(req, options, name) {
   log("findPlayer/http complete", response);
 
   const accounts = response.map(account => {
-    console.log("Account: ", account);
-    console.log("IdentityRegex: ", options.accountIdentityRegex);
-    const accountIdentity = account.careerLink.match(
-      options.accountIdentityRegex
-    );
-
-    if (!accountIdentity) {
-      throw new Error("Could not parse careerLink in response");
-    }
-
     return {
       level: account.level,
       portrait: account.portrait,
-      displayName: account.platformDisplayName,
-      platform: accountIdentity[1]
+      displayName: account.name,
+      platform: account.platform
     };
   });
 
