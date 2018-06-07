@@ -3,7 +3,6 @@ const request = require("request-promise");
 const debug = require("debug");
 
 const { scrapePlayerStats } = require("./owscraper");
-console.log(scrapePlayerStats);
 
 const log = debug("oversmash");
 
@@ -34,13 +33,11 @@ async function findPlayer(req, options, name) {
 
   // Note that the pound sign here is ignored, we keep it in just to make
   // debug logs clearer, and because it doesn't cause any harm:
-  console.log(nameEscaped);
   const searchPath = urlJoin("/search/account-by-name", nameEscaped);
 
   log("findPlayer/http get", searchPath);
 
   const response = await req.get(searchPath, { json: true });
-  console.log("FindPlayerResp: ", response);
 
   log("findPlayer/http complete", response);
 

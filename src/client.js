@@ -1,4 +1,4 @@
-import App from "./components/App";
+import App from "./shared/App";
 import BrowserRouter from "react-router-dom/BrowserRouter";
 import React from "react";
 import { hydrate } from "react-dom";
@@ -11,7 +11,8 @@ const client = new ApolloClient({
   link: createHttpLink({
     uri: "http://localhost:3000/graphql"
   }),
-  cache: new InMemoryCache()
+  cache: new InMemoryCache(),
+  ssrMode: true
 });
 
 hydrate(

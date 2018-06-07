@@ -1,50 +1,25 @@
 import React from "react";
-import gql from "graphql-tag";
 import { Query } from "react-apollo";
-import Layout from "../components/Layout";
+import { StandingsQuery } from "../graphql/queries";
+
+import Layout from "../shared/Layout";
+import { Link } from "react-router-dom";
 import { Container, Card, Header, List, Image, Grid } from "semantic-ui-react";
+
 import colors from "../utils/colors";
 import * as styles from "./leagueHome.styles";
-
-const getTeams = gql`
-  {
-    ranks {
-      team {
-        icon
-        name
-        abbreviatedName
-        homeLocation
-        primaryColor
-        secondaryColor
-        players(first: 10) {
-          edges {
-            node {
-              headshot
-              name
-              homeLocation
-              nationality
-              role
-              heroes
-            }
-          }
-        }
-      }
-      placement
-      records {
-        matchWin
-        matchLoss
-      }
-    }
-  }
-`;
 
 class LeagueHome extends React.Component {
   render() {
     return (
       <Layout>
-        <Query query={getTeams}>
+        <Query query={StandingsQuery}>
           {({ loading, error, data }) => {
             if (loading) return "Loading...";
+            if (error) {
+              console.log(error);
+              return "Error..";
+            }
             return (
               <Container>
                 <Header as="h1" style={{ marginLeft: "1em" }}>
@@ -64,7 +39,13 @@ class LeagueHome extends React.Component {
                           },
                           i
                         ) => (
-                          <Grid.Row key={i} centered verticalAlign="middle">
+                          <Grid.Row
+                            as={Link}
+                            key={i}
+                            centered
+                            verticalAlign="middle"
+                            to={`/teams/${team.name}`}
+                          >
                             <Grid.Column
                               className={`placement ${styles.placement}`}
                               width={1}

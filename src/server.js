@@ -1,20 +1,16 @@
-import App from "./components/App";
+import App from "./shared/App";
 import bodyParser from "body-parser";
 import React from "react";
 import { StaticRouter } from "react-router-dom";
 import express from "express";
 import { renderToString } from "react-dom/server";
 import costAnalysis from "graphql-cost-analysis";
-import { formatError } from "apollo-errors";
-import { makeExecutableSchema } from "graphql-tools";
 import { ApolloProvider, getDataFromTree } from "react-apollo";
 import { ApolloClient } from "apollo-client";
 import { SchemaLink } from "apollo-link-schema";
 import { InMemoryCache } from "apollo-cache-inmemory";
-import fetch from "node-fetch";
 import { loadSchema } from "./graphql/schema";
 import { graphqlExpress, graphiqlExpress } from "apollo-server-express";
-import resolvers from "./graphql/resolvers";
 
 const assets = require(process.env.RAZZLE_ASSETS_MANIFEST);
 

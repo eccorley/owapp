@@ -7,6 +7,74 @@ interface Node {
     id: ID!
 }
 
+type Schedule {
+  startDate: String!,
+  endDate: String!,
+  stages: [LeagueStage]
+}
+
+type News {
+  totalBlogs: Int
+  pageSize: Int
+  page: Int
+  totalPages: Int
+  blogs: [NewsBlog]
+}
+
+type NewsBlog implements Node {
+  id: ID!
+  created: Float
+  updated: Float
+  publish: Float
+  title: String
+  author: String
+  locale: String
+  keywords: [String]
+  summary: String
+  thumbnail: MediaReference
+  header: MediaReference
+  defaultUrl: String
+  tags: [String]
+}
+
+type MediaReference implements Node {
+  id: ID!
+  url: String
+  mimeType: String
+  type: String
+  size: Int
+  width: Int
+  height: Int
+  originalFilename: String
+}
+
+type Map implements Node {
+  id: ID!
+  name: LocalizedText
+  background: String
+  icon: String
+  type: String
+  description: LocalizedText
+  thumbnail: String
+}
+
+type LocalizedText {
+  en_US: String
+  es_MX: String
+  pt_BR: String
+  de_DE: String
+  en_GB: String
+  es_ES: String
+  fr_FR: String
+  it_IT: String
+  pl_PL: String
+  ru_RU: String
+  ko_KR: String
+  zh_TW: String
+  zh_CN: String
+  ja_JP: String
+}
+
 type LeagueDivision implements Node {
     id: ID!
     name: String!
@@ -110,7 +178,37 @@ type LeagueRecord {
 type LeagueStage implements Node {
     id: ID!
     name: String!
+    matches: [LeagueMatch]
     teams(after: String, first: Int!): LeagueTeamConnection
+}
+
+type LeagueMatch implements Node {
+  id: ID!
+  competitors: [LeagueTeam]
+  scores: [LeagueMatchScore]
+  winner: LeagueTeam
+  games: [LeagueGame]
+}
+
+type LeagueMatchScore {
+  value: Int!
+}
+
+type LeagueGame implements Node {
+  id: ID!
+  number: Int!
+  points: [Int]
+  attributes: LeagueGameAttributes
+}
+
+type LeagueGameAttributes {
+  map: String!
+  mapScore: LeagueMapScore
+}
+
+type LeagueMapScore {
+  team1: Int!,
+  team2: Int!
 }
 
 type LeagueStageConnection {
@@ -162,6 +260,10 @@ type Query {
   teams(after: String, first: Int!): LeagueTeamConnection @cost(compelexity: 1)
   ranks: [LeagueRank]
   stages(after: String, first: Int!): LeagueStageConnection @cost(complexity: 1)
+  schedule: Schedule
+  maps: [Map],
+  news: News,
+  team(teamId: String!): LeagueTeam
 }
 
 
@@ -242,8 +344,7 @@ type AllBestStats { eliminationsMostInGame: Int!
     reconAssistsMostInGame: Int!
     teleporterPadDestroyedMostInGame: Int!
     shieldGeneratorsDestroyedMostInGame: Int!
-    environmentalKillsMostInGame: Int!
-    meleeFinalBlowMostInGame: Int! }
+    environmentalKillsMostInGame: Int! }
 type AllAverageStats { barrierDamageDoneAvgPer10Min: Int!
     deathsAvgPer10Min: Int!
     heroDamageDoneAvgPer10Min: Int!
@@ -405,9 +506,7 @@ type WidowmakerCombatStats { eliminations: Int!
     criticalHitAccuracy: Int!
     weaponAccuracy: Int!
     meleeFinalBlow: Int!
-    multikill: Int!
-    multikills: Int!
-    meleeFinalBlows: Int! }
+    multikill: Int! }
 type WidowmakerAssistsStats { reconAssists: Int!
     reconAssistsMostInGame: Int!
     turretsDestroyed: Int!
@@ -556,10 +655,10 @@ type GenjiGameStats { timePlayed: Float!
         
 type MccreeHeroStats { deadeyeKills: Int!
     deadeyeKillMostInGame: Int!
-    fanTheHammerKillsMostInGame: Int!
     fanTheHammerKills: Int!
-    deadeyeKillsAvgPer10Min: Int!
+    fanTheHammerKillsMostInGame: Int!
     fanTheHammerKillsAvgPer10Min: Int!
+    deadeyeKillsAvgPer10Min: Int!
     deadeyeKill: Int!
     fanTheHammerKill: Int!
     fanTheHammerKillMostInGame: Int!
@@ -570,14 +669,14 @@ type MccreeCombatStats { eliminations: Int!
     soloKills: Int!
     allDamageDone: Int!
     objectiveKills: Int!
+    objectiveTime: String!
     timeSpentOnFire: String!
     criticalHits: Int!
     heroDamageDone: Int!
     barrierDamageDone: Int!
-    objectiveTime: String!
+    quickMeleeAccuracy: Int!
     criticalHitAccuracy: Int!
     weaponAccuracy: Int!
-    quickMeleeAccuracy: Int!
     soloKill: Int!
     multikills: Int!
     meleeFinalBlow: Int! }
@@ -589,6 +688,7 @@ type MccreeBestStats { eliminationsMostInLife: Int!
     eliminationsMostInGame: Int!
     finalBlowsMostInGame: Int!
     objectiveKillsMostInGame: Int!
+    objectiveTimeMostInGame: String!
     soloKillsMostInGame: Int!
     criticalHitsMostInGame: Int!
     criticalHitsMostInLife: Int!
@@ -596,13 +696,14 @@ type MccreeBestStats { eliminationsMostInLife: Int!
     heroDamageDoneMostInGame: Int!
     heroDamageDoneMostInLife: Int!
     barrierDamageDoneMostInGame: Int!
-    objectiveTimeMostInGame: String!
     soloKillMostInGame: Int!
     multikillBest: Int!
     meleeFinalBlowMostInGame: Int! }
-type MccreeAverageStats { criticalHitsAvgPer10Min: Int!
+type MccreeAverageStats { barrierDamageDoneAvgPer10Min: Int!
+    criticalHitsAvgPer10Min: Int!
     timeSpentOnFireAvgPer10Min: Int!
     soloKillsAvgPer10Min: Int!
+    objectiveTimeAvgPer10Min: Int!
     objectiveKillsAvgPer10Min: Int!
     finalBlowsAvgPer10Min: Int!
     eliminationsAvgPer10Min: Int!
@@ -610,13 +711,11 @@ type MccreeAverageStats { criticalHitsAvgPer10Min: Int!
     heroDamageDoneAvgPer10Min: Int!
     eliminationsPerLife: Float!
     allDamageDoneAvgPer10Min: Float!
-    barrierDamageDoneAvgPer10Min: Int!
-    objectiveTimeAvgPer10Min: Int!
     meleeFinalBlowsAvgPer10Min: Int! }
-type MccreeAwardsStats { medalsGold: Int!
-    medals: Int!
+type MccreeAwardsStats { medalsBronze: Int!
     medalsSilver: Int!
-    medalsBronze: Int!
+    medalsGold: Int!
+    medals: Int!
     card: Int! }
 type MccreeGameStats { timePlayed: Int!
     gamesPlayed: Int!
@@ -1184,20 +1283,19 @@ type WinstonAverageStats { barrierDamageDoneAvgPer10Min: Int!
     timeSpentOnFireAvgPer10Min: Int!
     soloKillsAvgPer10Min: Int!
     meleeFinalBlowsAvgPer10Min: Int! }
-type WinstonAwardsStats { medalsSilver: Int!
+type WinstonAwardsStats { medalsBronze: Int!
+    medalsSilver: Int!
     medalsGold: Int!
     medals: Int!
-    medalsBronze: Int!
     card: Int! }
 type WinstonGameStats { timePlayed: Int!
     gamesPlayed: Int!
     gamesWon: Int!
     gamesLost: Int!
     winPercentage: Int! }
-type WinstonMiscStats { meleeKill: Int!
+type WinstonMiscStats { meleeKills: Int!
     jumpKills: Int!
-    weaponKills: Int!
-    meleeKills: Int! }
+    weaponKills: Int! }
 
         type WinstonStats {
           
@@ -1219,23 +1317,29 @@ type BastionCombatStats { death: Int!
     allDamageDone: Int!
     heroDamageDone: Int!
     barrierDamageDone: Int!
+    timeSpentOnFire: String!
     weaponAccuracy: Int! }
 type BastionBestStats { allDamageDoneMostInLife: Int!
     weaponAccuracyBestInGame: Int!
     allDamageDoneMostInGame: Int!
     heroDamageDoneMostInGame: Int!
     heroDamageDoneMostInLife: Int!
-    barrierDamageDoneMostInGame: Int! }
+    barrierDamageDoneMostInGame: Int!
+    timeSpentOnFireMostInGame: Int! }
 type BastionAverageStats { barrierDamageDoneAvgPer10Min: Int!
     deathsAvgPer10Min: Int!
     heroDamageDoneAvgPer10Min: Int!
-    allDamageDoneAvgPer10Min: Float! }
+    allDamageDoneAvgPer10Min: Float!
+    timeSpentOnFireAvgPer10Min: Int! }
 type BastionAwardsStats { medalsBronze: Int!
     medalsGold: Int!
-    medals: Int! }
+    medals: Int!
+    medalsSilver: Int! }
 type BastionGameStats { timePlayed: Float!
     gamesPlayed: Int!
-    gamesLost: Int! }
+    gamesWon: Int!
+    gamesLost: Int!
+    winPercentage: Int! }
 
         type BastionStats {
           
@@ -1251,36 +1355,62 @@ type BastionGameStats { timePlayed: Float!
         # == symmetra types ==
 
         
-type SymmetraHeroStats { damageBlocked: Int!
+type SymmetraHeroStats { sentryTurretKills: Int!
+    sentryTurretKillsMostInGame: Int!
+    playersTeleported: Int!
+    playersTeleportedMostInGame: Int!
+    teleporterUptime: Int!
+    teleporterUptimeBestInGame: Int!
+    damageBlocked: Int!
     damageBlockedMostInGame: Int!
-    damageBlockedAvgPer10Min: Int! }
-type SymmetraCombatStats { elimination: Int!
-    death: Int!
+    sentryTurretKillsAvgPer10Min: Int!
+    playersTeleportedAvgPer10Min: Int!
+    damageBlockedAvgPer10Min: Int!
+    teleporterUptimeAverage: Float! }
+type SymmetraCombatStats { eliminations: Int!
+    deaths: Int!
+    finalBlows: Int!
+    soloKills: Int!
     allDamageDone: Int!
-    heroDamageDone: Int! }
-type SymmetraBestStats { eliminationMostInLife: Int!
+    objectiveKills: Int!
+    objectiveTime: String!
+    multikills: Int!
+    timeSpentOnFire: String! }
+type SymmetraAssistsStats { turretsDestroyed: Int!
+    turretDestroyed: Int! }
+type SymmetraBestStats { eliminationsMostInLife: Int!
     allDamageDoneMostInLife: Int!
     killStreakBest: Int!
     allDamageDoneMostInGame: Int!
-    eliminationMostInGame: Int!
-    heroDamageDoneMostInGame: Int!
-    heroDamageDoneMostInLife: Int! }
-type SymmetraAverageStats { eliminationsAvgPer10Min: Int!
+    eliminationsMostInGame: Int!
+    finalBlowsMostInGame: Int!
+    objectiveKillsMostInGame: Int!
+    objectiveTimeMostInGame: String!
+    multikillBest: Int!
+    soloKillsMostInGame: Int! }
+type SymmetraAverageStats { timeSpentOnFireAvgPer10Min: Int!
+    soloKillsAvgPer10Min: Int!
+    objectiveTimeAvgPer10Min: Int!
+    objectiveKillsAvgPer10Min: Int!
+    finalBlowsAvgPer10Min: Int!
+    eliminationsAvgPer10Min: Int!
     deathsAvgPer10Min: Int!
-    heroDamageDoneAvgPer10Min: Int!
-    eliminationPerLife: Int!
+    eliminationsPerLife: Float!
     allDamageDoneAvgPer10Min: Float! }
-type SymmetraAwardsStats { medalsSilver: Int!
+type SymmetraAwardsStats { medalsBronze: Int!
+    medalsSilver: Int!
     medalsGold: Int!
-    medals: Int! }
-type SymmetraGameStats { timePlayed: Float!
-    gamesPlayed: Int!
-    gamesLost: Int! }
+    medals: Int!
+    cards: Int!
+    card: Int! }
+type SymmetraGameStats { timePlayed: Int!
+    gamesWon: Int! }
 
         type SymmetraStats {
           
   hero: SymmetraHeroStats
   combat: SymmetraCombatStats
+  assists: SymmetraAssistsStats
   best: SymmetraBestStats
   average: SymmetraAverageStats
   awards: SymmetraAwardsStats
@@ -1451,7 +1581,7 @@ type RoadhogAverageStats { barrierDamageDoneAvgPer10Min: Int!
     objectiveKillsAvgPer10Min: Int!
     meleeFinalBlowsAvgPer10Min: Int!
     finalBlowsAvgPer10Min: Int!
-    eliminationsPerLife: Float! }
+    eliminationsPerLife: Int! }
 type RoadhogAwardsStats { medalsBronze: Int!
     medalsSilver: Int!
     medalsGold: Int!
@@ -1611,7 +1741,7 @@ type ZaryaAverageStats { barrierDamageDoneAvgPer10Min: Int!
     eliminationsAvgPer10Min: Int!
     deathsAvgPer10Min: Int!
     heroDamageDoneAvgPer10Min: Int!
-    eliminationsPerLife: Float!
+    eliminationsPerLife: Int!
     allDamageDoneAvgPer10Min: Float! }
 type ZaryaAwardsStats { medalsBronze: Int!
     medalsSilver: Int!
@@ -1733,8 +1863,8 @@ type Soldier76GameStats { timePlayed: Float!
         # == lucio types ==
 
         
-type LucioAwardsStats { medalsGold: Int!
-    medalsBronze: Int!
+type LucioAwardsStats { medalsBronze: Int!
+    medalsGold: Int!
     medals: Int!
     medalsSilver: Int! }
 type LucioGameStats { timePlayed: Int!
@@ -2141,7 +2271,8 @@ type AnaGameStats { timePlayed: Int!
     gamesPlayed: Int!
     gamesWon: Int!
     gamesLost: Int!
-    winPercentage: Int! }
+    winPercentage: Int!
+    gamesTied: Int! }
 
         type AnaStats {
           

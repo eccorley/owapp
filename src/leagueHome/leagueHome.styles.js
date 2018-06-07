@@ -1,4 +1,5 @@
 import { css } from "emotion";
+import colors from "../utils/colors";
 
 export const homePage = css`
   width: 100%;
@@ -32,6 +33,7 @@ export const listRow = css`
 
 export const placement = css`
   font-style: italic;
+  color: ${colors.darkgray1};
   font-family: "Roboto Condensed";
   font-size: 54px;
   padding: 0px 30px;
@@ -41,6 +43,7 @@ export const teamDetails = css`
   display: flex;
   flex-direction: column;
   margin-left: 36px;
+  color: ${colors.darkgray1};
 `;
 
 export const teamIcon = css`

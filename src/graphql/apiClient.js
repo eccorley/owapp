@@ -2,6 +2,8 @@ const owclient = require("../utils/owapi").default;
 const lru = require("lru-cache");
 const fetch = require("isomorphic-fetch");
 
+const baseUrl = `https://api.overwatchleague.com`;
+
 const ow = owclient({
   normalizeNamesAs: "camel"
 });
@@ -36,19 +38,49 @@ export async function getPlayer(name) {
 }
 
 export async function getPlayerStats(name, region, platform) {
-  return getOrSetCache(["s", region, platform, name], async () => {
+  return getOrSetCache(["ps", region, platform, name], async () => {
     return ow.playerStats(name, region, platform);
   });
 }
 
 export async function getTeams() {
-  return getOrSetCache(["t"], async () =>
-    fetch("https://api.overwatchleague.com/teams").then(res => res.json())
+  return getOrSetCache(["teams"], async () =>
+    fetch(`${baseUrl}/teams`).then(res => res.json())
+  );
+}
+
+export async function getTeam(id) {
+  return getOrSetCache(["team"], async () =>
+    fetch(`${baseUrl}/teams/${id}`).then(res => res.json())
   );
 }
 
 export async function getRanks() {
-  return getOrSetCache(["r"], async () =>
-    fetch("https://api.overwatchleague.com/standings").then(r => r.json())
+  return getOrSetCache(["ranks"], async () =>
+    fetch(`${baseUrl}/standings`).then(r => r.json())
+  );
+}
+
+export async function getMaps() {
+  return getOrSetCache(["map"], async () =>
+    fetch(`${baseUrl}/maps`).then(r => r.json())
+  );
+}
+
+export async function getNews(page) {
+  return getOrSetCache(["n"], async () =>
+    fetch(`${baseUrl}/news?pageSize=15&page=${page}`).then(r => r.json())
+  );
+}
+
+export async function getSchedule() {
+  return getOrSetCache(["s"], async () =>
+    fetch(`${baseUrl}/schedule`).then(r => r.json())
+  );
+}
+
+export async function getTimeToNextMatch() {
+  return getOrSetCache(["ttn"], async () =>
+    fetch(`${baseUrl}/live-match`).then(r => r.json())
   );
 }

@@ -1,8 +1,11 @@
+import { getSchedule, getMaps, getNews } from "./apiClient";
+
 const {
   nameFromDisplayName,
   getPlayer,
   getPlayerStats,
   getTeams,
+  getTeam,
   getRanks
 } = require("./apiClient");
 const { connectionFromArray, toGlobalId } = require("graphql-relay");
@@ -11,6 +14,18 @@ require("isomorphic-fetch");
 
 export default {
   Query: {
+    async schedule(_, args) {
+      const { data: schedule } = await getSchedule();
+      return schedule;
+    },
+    async news(_, { page = 1 }) {
+      const news = await getNews(page);
+      return news;
+    },
+    async maps(_, args) {
+      const maps = await getMaps();
+      return maps;
+    },
     async player(_, { name }) {
       const player = await getPlayer(name);
 
@@ -28,6 +43,10 @@ export default {
 
       return connectionFromArray(competitors, args);
     },
+    async team(_, { id }) {
+      const team = await getTeam(id);
+      return team;
+    },
     async ranks() {
       const res = await await getRanks();
 
@@ -35,6 +54,52 @@ export default {
 
       return values;
     }
+  },
+  Schedule: {
+    startDate: ({ startDate }) => startDate,
+    endDate: ({ endDate }) => endDate,
+    stages: ({ stages }) => stages
+  },
+  News: {
+    totalBlogs: ({ totalBlogs }) => totalBlogs,
+    pageSize: ({ pageSize }) => pageSize,
+    page: ({ page }) => page,
+    totalPages: ({ totalPages }) => totalPages,
+    blogs: ({ blogs }) => blogs
+  },
+  NewsBlog: {
+    id: ({ blogId }) => blogId,
+    created: ({ created }) => created,
+    updated: ({ updated }) => updated,
+    publish: ({ publish }) => publish,
+    title: ({ title }) => title,
+    author: ({ author }) => author,
+    locale: ({ locale }) => locale,
+    keywords: ({ keywords }) => keywords,
+    summary: ({ summary }) => summary,
+    thumbnail: ({ thumbnail }) => thumbnail,
+    header: ({ header }) => header,
+    defaultUrl: ({ defaultUrl }) => defaultUrl,
+    tags: ({ tags }) => tags
+  },
+  MediaReference: {
+    id: ({ mediaId }) => mediaId,
+    url: ({ url }) => url,
+    mimeType: ({ mimeType }) => mimeType,
+    type: ({ type }) => type,
+    size: ({ size }) => size,
+    width: ({ width }) => width,
+    height: ({ height }) => height,
+    originalFilename: ({ originalFilename }) => originalFilename
+  },
+  Map: {
+    id: ({ id }) => toGlobalId("Map", id),
+    name: ({ name }) => name,
+    background: ({ background }) => background,
+    icon: ({ icon }) => icon,
+    type: ({ type }) => type,
+    description: ({ desc }) => desc,
+    thumbnail: ({ thumb }) => thumb
   },
   LeagueTeam: {
     id: ({ competitor: { id } }) => toGlobalId("LeagueTeam", id),
@@ -118,6 +183,35 @@ export default {
     matchDraw: ({ matchDraw }) => matchDraw,
     matchLoss: ({ matchLoss }) => matchLoss,
     matchWin: ({ matchWin }) => matchWin
+  },
+  LeagueStage: {
+    id: ({ id }) => id,
+    name: ({ name }) => name,
+    matches: ({ matches }) => matches,
+    teams: ({ teams }) => teams
+  },
+  LeagueMatch: {
+    id: ({ id }) => id,
+    competitors: match => {
+      console.log(match);
+      return match.competitors;
+    },
+    scores: ({ scores }) => scores,
+    winner: ({ winner }) => winner,
+    games: ({ games }) => games
+  },
+  LeagueMatchScore: {
+    value: ({ value }) => value
+  },
+  LeagueGame: {
+    id: ({ id }) => id,
+    number: ({ number }) => number,
+    points: ({ points }) => points,
+    attributes: ({ attributes }) => attributes
+  },
+  LeagueGameAttributes: {
+    map: ({ map }) => map,
+    mapScore: ({ mapScore }) => mapScore
   },
   Player: {
     async account(player, { region, platform }) {

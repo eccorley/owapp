@@ -17,6 +17,74 @@ interface Node {
     id: ID!
 }
 
+type Schedule {
+  startDate: String!,
+  endDate: String!,
+  stages: [LeagueStage]
+}
+
+type News {
+  totalBlogs: Int
+  pageSize: Int
+  page: Int
+  totalPages: Int
+  blogs: [NewsBlog]
+}
+
+type NewsBlog implements Node {
+  id: ID!
+  created: Float
+  updated: Float
+  publish: Float
+  title: String
+  author: String
+  locale: String
+  keywords: [String]
+  summary: String
+  thumbnail: MediaReference
+  header: MediaReference
+  defaultUrl: String
+  tags: [String]
+}
+
+type MediaReference implements Node {
+  id: ID!
+  url: String
+  mimeType: String
+  type: String
+  size: Int
+  width: Int
+  height: Int
+  originalFilename: String
+}
+
+type Map implements Node {
+  id: ID!
+  name: LocalizedText
+  background: String
+  icon: String
+  type: String
+  description: LocalizedText
+  thumbnail: String
+}
+
+type LocalizedText {
+  en_US: String
+  es_MX: String
+  pt_BR: String
+  de_DE: String
+  en_GB: String
+  es_ES: String
+  fr_FR: String
+  it_IT: String
+  pl_PL: String
+  ru_RU: String
+  ko_KR: String
+  zh_TW: String
+  zh_CN: String
+  ja_JP: String
+}
+
 type LeagueDivision implements Node {
     id: ID!
     name: String!
@@ -120,7 +188,37 @@ type LeagueRecord {
 type LeagueStage implements Node {
     id: ID!
     name: String!
+    matches: [LeagueMatch]
     teams(after: String, first: Int!): LeagueTeamConnection
+}
+
+type LeagueMatch implements Node {
+  id: ID!
+  competitors: [LeagueTeam]
+  scores: [LeagueMatchScore]
+  winner: LeagueTeam
+  games: [LeagueGame]
+}
+
+type LeagueMatchScore {
+  value: Int!
+}
+
+type LeagueGame implements Node {
+  id: ID!
+  number: Int!
+  points: [Int]
+  attributes: LeagueGameAttributes
+}
+
+type LeagueGameAttributes {
+  map: String!
+  mapScore: LeagueMapScore
+}
+
+type LeagueMapScore {
+  team1: Int!,
+  team2: Int!
 }
 
 type LeagueStageConnection {
@@ -172,6 +270,10 @@ type Query {
   teams(after: String, first: Int!): LeagueTeamConnection @cost(compelexity: 1)
   ranks: [LeagueRank]
   stages(after: String, first: Int!): LeagueStageConnection @cost(complexity: 1)
+  schedule: Schedule
+  maps: [Map],
+  news: News,
+  team(teamId: String!): LeagueTeam
 }
 `;
 
@@ -225,12 +327,10 @@ export async function generateSchema(trainingAccountsSet) {
 
   // Iterate through each hero:
   const heroes = Object.keys(trainingSet).map(name => {
-    console.log(name);
     const heroTypeName = title(`${name}Stats`);
     const heroStats = trainingSet[name];
 
     // Iterate through each stats group for this hero:
-    console.log(heroStats);
     const groups = Object.keys(heroStats).map(group => {
       if (group === "name" || group === "rawName") {
         return { type: "" };
@@ -240,8 +340,6 @@ export async function generateSchema(trainingAccountsSet) {
       const groupStats = heroStats[group];
 
       // Finally, walk through each stat name/value to infer its type:
-      console.log(Object.keys(heroStats), group);
-      console.log(Object.keys(groupStats));
       const statTypes = Object.keys(groupStats).map(stat => {
         const value = groupStats[stat];
 
