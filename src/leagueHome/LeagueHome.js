@@ -44,7 +44,7 @@ class LeagueHome extends React.Component {
                             key={i}
                             centered
                             verticalAlign="middle"
-                            to={`/teams/${team.name}`}
+                            to={`/teams/${encodeURIComponent(team.teamId)}`}
                           >
                             <Grid.Column
                               className={`placement ${styles.placement}`}

@@ -93,6 +93,7 @@ type LeagueDivisionEdge {
 
 type LeagueTeam implements Node {
     id: ID!
+    teamId: Int!
     name: String!
     homeLocation: String!
     primaryColor: String!
@@ -263,7 +264,7 @@ type Query {
   schedule: Schedule
   maps: [Map],
   news: News,
-  team(teamId: String!): LeagueTeam
+  team(teamId: String): LeagueTeam
 }
 
 

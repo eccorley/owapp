@@ -19,6 +19,7 @@
     "autoprefixer": "^8.6.0",
     "camelcase": "^5.0.0",
     "cheerio": "^1.0.0-rc.2",
+    "date-fns": "^1.29.0",
     "debug": "^3.1.0",
     "deepmerge": "^2.1.0",
     "emotion": "^9.1.3",

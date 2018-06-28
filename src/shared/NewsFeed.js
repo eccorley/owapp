@@ -1,6 +1,8 @@
 import React from "react";
 import { Query } from "react-apollo";
 import { NewsQuery } from "../graphql/queries";
+import { format } from "date-fns";
+import { dateFormat } from "../constants";
 
 import { Feed, Image } from "semantic-ui-react";
 
@@ -21,14 +23,16 @@ export default class NewsFeed extends React.Component {
                         display: "flex",
                         flexDirection: "row",
                         justifyContent: "space-between",
-                        maxHeight: 175,
+                        maxHeight: 200,
                         padding: 18
                       }}
                     >
                       <div>
                         <Feed.Summary>
                           {blog.title}
-                          <Feed.Date>{blog.publish}</Feed.Date>
+                          <Feed.Date>
+                            {format(blog.publish, dateFormat)}
+                          </Feed.Date>
                         </Feed.Summary>
                         <Feed.Extra text>{blog.summary}</Feed.Extra>
                       </div>

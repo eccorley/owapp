@@ -1,6 +1,7 @@
 import App from "./shared/App";
 import bodyParser from "body-parser";
 import React from "react";
+import ScrollToTop from "./shared/ScrollToTop";
 import { StaticRouter } from "react-router-dom";
 import express from "express";
 import { renderToString } from "react-dom/server";
@@ -46,7 +47,9 @@ server
     const app = (
       <ApolloProvider client={client}>
         <StaticRouter context={context} location={req.url}>
-          <App />
+          <ScrollToTop>
+            <App />
+          </ScrollToTop>
         </StaticRouter>
       </ApolloProvider>
     );

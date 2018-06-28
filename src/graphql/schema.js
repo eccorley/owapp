@@ -103,6 +103,7 @@ type LeagueDivisionEdge {
 
 type LeagueTeam implements Node {
     id: ID!
+    teamId: Int!
     name: String!
     homeLocation: String!
     primaryColor: String!

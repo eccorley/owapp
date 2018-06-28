@@ -5,6 +5,7 @@ export const StandingsQuery = gql`
   query StandingsQuery {
     ranks {
       team {
+        teamId
         icon
         name
         abbreviatedName
@@ -34,8 +35,9 @@ export const StandingsQuery = gql`
 `;
 
 export const TeamQuery = gql`
-  query TeamQuery($teamId: Int) {
-    team(id: $teamId) {
+  query TeamQuery($teamId: String) {
+    team(teamId: $teamId) {
+      teamId
       icon
       name
       abbreviatedName

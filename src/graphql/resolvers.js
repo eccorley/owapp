@@ -43,9 +43,9 @@ export default {
 
       return connectionFromArray(competitors, args);
     },
-    async team(_, { id }) {
-      const team = await getTeam(id);
-      return team;
+    async team(_, { teamId }) {
+      const team = await getTeam(teamId);
+      return { competitor: team };
     },
     async ranks() {
       const res = await await getRanks();
@@ -103,6 +103,7 @@ export default {
   },
   LeagueTeam: {
     id: ({ competitor: { id } }) => toGlobalId("LeagueTeam", id),
+    teamId: ({ competitor: { id } }) => String(id),
     name: ({ competitor: { name } }) => name,
     homeLocation: ({ competitor: { homeLocation } }) => homeLocation,
     primaryColor: ({ competitor: { primaryColor } }) => primaryColor,
